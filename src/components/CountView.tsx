@@ -14,7 +14,7 @@ function CountView({ history }: { history: HistoryItem[] }) {
   }, [history]);
 
   return (
-    <p className="text-5xl my-12 flex" style={{ color: "#fff" }}>
+    <p className="LastRamen" style={{ color: "#fff" }}>
       {days === 0 ? (
         <>
           今日ラーメンを食べました <Emoji />
