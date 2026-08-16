@@ -2,9 +2,24 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My_Ramen_History</title>
+    <!-- viewport-fit=cover: ホーム画面から全画面起動したときにセーフエリアを自分で制御する -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#fce2c4" />
+    <meta name="description" content="巡ったラーメン屋さんの軌跡を記録します" />
+
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <!-- iOS のホーム画面アイコン（SVG は不可なので PNG） -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- iOS 17.4 未満向け。これが無いと Safari の UI 付きで起動する -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="ラーメン履歴" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <title>My Ramen History</title>
   </head>
   <body>
     <div id="root"></div>

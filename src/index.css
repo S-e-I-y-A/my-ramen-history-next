@@ -1,27 +1,35 @@
-@import "tailwindcss";
-
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* iOS では Hiragino Sans が当たる。外部フォントを読まないのでオフラインでも崩れない */
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --bg: #fce2c4;
+  --surface: #fffaf3;
+  --text: #3a2a1a;
+  --text-muted: #8a7a6a;
+  --accent: #0093d1;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* iOS でタップ時の青いハイライトを消す */
+  -webkit-tap-highlight-color: transparent;
 }
 
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  /* ホーム画面から起動したときに端末のセーフエリアを避ける */
+  padding:
+    env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  /* 全画面表示でのゴムバウンドを抑える */
+  overscroll-behavior-y: none;
 }
-
-

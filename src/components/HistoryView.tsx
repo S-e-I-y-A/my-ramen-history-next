@@ -1,67 +1,68 @@
-import Rating from '@mui/material/Rating';
-import Button from '@mui/material/Button';
+import { useMemo } from "react";
+import IconButton from "@mui/material/IconButton";
+import Rating from "@mui/material/Rating";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import type { RamenRecord } from "../types";
 
 function HistoryView({
   history,
   onDelete,
+  onSelect,
 }: {
-  history: { shop: string; date: string; rating: string }[];
-  onDelete: (index: number) => void;
+  history: RamenRecord[];
+  onDelete: (id: string) => void;
+  onSelect: (record: RamenRecord) => void;
 }) {
-  if (history.length === 0) {
+  // 新しい記録が上に来るように並べる（元の配列は壊さない）
+  const sorted = useMemo(
+    () => [...history].sort((a, b) => b.date.localeCompare(a.date)),
+    [history]
+  );
+
+  if (sorted.length === 0) {
     return (
-      <div id="cont">
-        <p style={{ color: '#fff', fontSize: '1.3rem', margin: '2em' }}>
-          記録がありません
-          <br />
-          「追加」ボタンから記録を追加しよう！
-        </p>
-      </div>
+      <p className="empty">
+        「追加」ボタンから
+        <br />
+        最初の一杯を記録しよう！
+      </p>
     );
   }
 
   return (
-    <>
-      <div id="cont">
-        <table id="history">
-          <thead>
-            <tr>
-              <th scope="col">お店</th>
-              <th scope="col">日付</th>
-              <th scope="col">評価</th>
-              <th scope="col">編集</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((item, idx) => (
-              <tr key={idx} id="lists">
-                <td>{item.shop}</td>
-                <td>{item.date}</td>
-                <td>
-                  <Rating
-                    name={`rating-${idx}`}
-                    value={Number(item.rating)}
-                    precision={0.5}
-                    readOnly
-                    size="small"
-                  />
-                </td>
-                <td>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    size="small"
-                    onClick={() => onDelete(idx)}
-                  >
-                    削除
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
+    <ul className="history">
+      {sorted.map((item) => (
+        <li key={item.id}>
+          <button
+            type="button"
+            className="record"
+            onClick={() => onSelect(item)}
+          >
+            <span className="record__shop">{item.shop}</span>
+            <span className="record__date">{item.date}</span>
+            <Rating
+              value={item.rating}
+              precision={0.5}
+              readOnly
+              size="small"
+              // 親ボタンのタップ扱いに任せる
+              tabIndex={-1}
+            />
+          </button>
+          <IconButton
+            aria-label={`${item.shop}の記録を削除`}
+            color="error"
+            onClick={() => {
+              if (confirm(`「${item.shop}」の記録を削除しますか？`)) {
+                onDelete(item.id);
+              }
+            }}
+          >
+            <DeleteOutlineIcon />
+          </IconButton>
+        </li>
+      ))}
+    </ul>
   );
 }
 
