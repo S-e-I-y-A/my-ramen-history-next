@@ -45,7 +45,9 @@ React + mui + day.js + vite-plugin-pwa など
 
 このアプリは PWA なので、App Store も Apple Developer 登録も不要です。
 
-### 1. 公開する
+**公開先: https://my-ramen-history-next.vercel.app**
+
+### 1. 公開する（初回のみ）
 
 ```bash
 npx vercel login
