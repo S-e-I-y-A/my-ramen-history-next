@@ -1,88 +1,102 @@
-#root {
-  max-width: 1280px;
+.app {
+  max-width: 640px;
   margin: 0 auto;
-  text-align: center;
-}
-.card {
-  padding: 2em;
+  padding: 1rem 1rem 3rem;
 }
 
-.read-the-docs {
-  color: #888;
-}
-
-body {
-  background: #fce2c4;
-  font-family: "Noto Sans JP", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-}
-
+/* 経過日数の見出し */
 .LastRamen {
-  text-shadow: #fc0 1px 0 10px;
-  font-size: 3rem; /* text-5xl */
-  line-height: 1;
-  margin-top: 3rem; /* my-12 */
-  margin-bottom: 3rem;
-  display: flex; /* flex */
-}
-
-h1 {
-  margin: 2em 0 1em 0;
-  font-size: 2rem;
-  color: #ffffff;
-  letter-spacing: 0.1em;
-}
-
-#cont {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2em;
-}
-
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-  background: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  margin: 0 auto;
-  min-width: 400px;
-  font-size: 1.1rem;
-  color: #222;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-th,
-td {
-  border-bottom: 1px solid #e0e0e0;
-  padding: 16px 24px;
+  margin: 1.5rem 0;
+  font-size: clamp(1.25rem, 5.5vw, 2rem);
+  line-height: 1.4;
+  font-weight: 700;
   text-align: center;
+  text-wrap: balance;
 }
 
-th {
-  background: #13c0ff;
-  color: #263238;
-  font-weight: bold;
-  font-size: 1.08em;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid #13c0ff;
+.LastRamen strong {
+  margin: 0 0.25em;
+  font-size: 1.4em;
+  color: var(--accent);
 }
 
-tr:last-child td {
-  border-bottom: none;
+/* 追加 / 読み込み / 書き出し */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
-tbody tr {
-  transition: background 0.2s;
+.empty {
+  margin: 3rem 0;
+  text-align: center;
+  color: var(--text-muted);
+  line-height: 2;
 }
 
-tbody tr:hover td {
-  background: #e3f2fd;
+/* 記録一覧 */
+.history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-#history {
-  border-radius: 12px;
+.history li {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-right: 0.25rem;
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+/* カード本体。タップで詳細を開くのでボタン要素にしている */
+.record {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  padding: 0.875rem 0.25rem 0.875rem 1rem;
+  background: none;
+  border: none;
+  border-radius: 14px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.record__shop {
+  font-size: 1.05rem;
+  font-weight: 700;
+  /* 長い店名でも横に溢れさせない */
   overflow: hidden;
-  margin-bottom: 2em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record__date {
+  grid-row: 2;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.record .MuiRating-root {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+@media (hover: hover) {
+  .record:hover {
+    background: #fff3e0;
+  }
 }

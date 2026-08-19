@@ -1,76 +1,60 @@
 import "./App.css";
+import { useCallback, useEffect, useState } from "react";
 import CountView from "./components/CountView";
 import HistoryView from "./components/HistoryView";
-import Editer from "./components/Editer";
-import Detail from "./components/detail";
-import { useState, useEffect } from "react";
+import Editor from "./components/Editor";
+import Detail from "./components/Detail";
+import { loadHistory, newId, saveHistory } from "./storage";
+import type { RamenRecord } from "./types";
 
 function App() {
-  const [history, setHistory] = useState<
-    { shop: string; date: string; rating: string }[]
-  >([]);
+  const [history, setHistory] = useState<RamenRecord[]>([]);
+  const [selected, setSelected] = useState<RamenRecord | null>(null);
 
-  // 初回マウント時にlocalStorageから取得
+  // 初回マウント時に localStorage から取得（旧形式はここで移行される）
   useEffect(() => {
-    const data = localStorage.getItem("data");
-    if (data) {
-      try {
-        setHistory(JSON.parse(data));
-      } catch {
-        setHistory([]);
-      }
-    }
+    setHistory(loadHistory());
   }, []);
 
-  // 保存時に呼び出す関数
-  const handleSave = (
-    newData:
-      | { shop: string; date: string; rating: string }
-      | { shop: string; date: string; rating: string }[]
-  ) => {
-    if (Array.isArray(newData)) {
-      setHistory(newData);
-      localStorage.setItem("data", JSON.stringify(newData));
-    } else {
-      const newHistory = [...history, newData];
-      setHistory(newHistory);
-      localStorage.setItem("data", JSON.stringify(newHistory));
-    }
-  };
+  // state と localStorage を必ず同時に更新する唯一の入口
+  const commit = useCallback((records: RamenRecord[]) => {
+    setHistory(records);
+    saveHistory(records);
+  }, []);
 
-  // 削除処理
-  const handleDelete = (index: number) => {
-    const newHistory = history.filter((_, i) => i !== index);
-    setHistory(newHistory);
-    localStorage.setItem("data", JSON.stringify(newHistory));
-  };
+  const handleAdd = useCallback(
+    (record: Omit<RamenRecord, "id">) => {
+      commit([...history, { ...record, id: newId() }]);
+    },
+    [commit, history]
+  );
 
-  //detailを展開
-  const handlseShowDetail = (item: History) => {
-    setSelected(item);
-    setDetailOpen(true);
-  };
+  const handleReplaceAll = useCallback(
+    (records: RamenRecord[]) => {
+      commit(records);
+    },
+    [commit]
+  );
 
-  const handleCloseDetail = () => {
-    setDetailOpen(false);
-  };
+  const handleDelete = useCallback(
+    (id: string) => {
+      commit(history.filter((item) => item.id !== id));
+      setSelected((current) => (current?.id === id ? null : current));
+    },
+    [commit, history]
+  );
 
   return (
-    <>
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossOrigin="anonymous"
-      />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap"
-        rel="stylesheet"
-      />
+    <div className="app">
       <CountView history={history} />
-      <Editer onSave={handleSave} />
-      <HistoryView history={history} onDelete={handleDelete} />
-    </>
+      <Editor onAdd={handleAdd} onReplaceAll={handleReplaceAll} />
+      <HistoryView
+        history={history}
+        onDelete={handleDelete}
+        onSelect={setSelected}
+      />
+      <Detail record={selected} onClose={() => setSelected(null)} />
+    </div>
   );
 }
 

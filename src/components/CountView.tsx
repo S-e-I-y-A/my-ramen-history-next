@@ -1,31 +1,35 @@
 import { useMemo } from "react";
-import Emoji from "./Emoji";
 import dayjs from "dayjs";
+import Emoji from "./Emoji";
+import type { RamenRecord } from "../types";
 
-type HistoryItem = { shop: string; date: string; rating: string };
-
-function CountView({ history }: { history: HistoryItem[] }) {
+function CountView({ history }: { history: RamenRecord[] }) {
+  // 最終来店日からの経過日数。記録が無ければ null
   const days = useMemo(() => {
-    if (!history || history.length === 0) return null;
-    const latest = history
-      .map((item) => item.date)
-      .sort((a, b) => dayjs(b).unix() - dayjs(a).unix())[0];
-    return dayjs().diff(dayjs(latest), "day");
+    if (history.length === 0) return null;
+    // date は YYYY-MM-DD 固定なので辞書順の最大＝最新
+    const latest = history.reduce(
+      (max, item) => (item.date > max ? item.date : max),
+      history[0].date
+    );
+    return dayjs().startOf("day").diff(dayjs(latest).startOf("day"), "day");
   }, [history]);
 
   return (
-    <p className="LastRamen" style={{ color: "#fff" }}>
-      {days === 0 ? (
+    <p className="LastRamen">
+      {days === null ? (
         <>
-          今日ラーメンを食べました <Emoji />
+          まだ記録がありません <Emoji days={days} />
+        </>
+      ) : days <= 0 ? (
+        <>
+          今日ラーメンを食べました <Emoji days={days} />
         </>
       ) : (
         <>
           ラーメンに行ってから
-          <strong style={{ margin: "0 0.5em" }}>
-            {days !== null ? `${days}日` : "--日"}
-          </strong>
-          が経過しました <Emoji />
+          <strong>{days}日</strong>
+          が経過しました <Emoji days={days} />
         </>
       )}
     </p>
