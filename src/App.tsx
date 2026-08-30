@@ -1,5 +1,5 @@
 import "./App.css";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import CountView from "./components/CountView";
 import HistoryView from "./components/HistoryView";
 import Editor from "./components/Editor";
@@ -9,12 +9,18 @@ import type { RamenRecord } from "./types";
 
 function App() {
   const [history, setHistory] = useState<RamenRecord[]>([]);
-  const [selected, setSelected] = useState<RamenRecord | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // 初回マウント時に localStorage から取得（旧形式はここで移行される）
   useEffect(() => {
     setHistory(loadHistory());
   }, []);
+
+  // 詳細ダイアログは id で参照する。感想を書き換えた結果がそのまま反映される
+  const selected = useMemo(
+    () => history.find((item) => item.id === selectedId) ?? null,
+    [history, selectedId]
+  );
 
   // state と localStorage を必ず同時に更新する唯一の入口
   const commit = useCallback((records: RamenRecord[]) => {
@@ -32,14 +38,31 @@ function App() {
   const handleReplaceAll = useCallback(
     (records: RamenRecord[]) => {
       commit(records);
+      setSelectedId(null);
     },
     [commit]
+  );
+
+  const handleUpdateMemo = useCallback(
+    (id: string, memo: string) => {
+      commit(
+        history.map((item) => {
+          if (item.id !== id) return item;
+          const next: RamenRecord = { ...item };
+          // 空にしたら項目ごと落とす
+          if (memo) next.memo = memo;
+          else delete next.memo;
+          return next;
+        })
+      );
+    },
+    [commit, history]
   );
 
   const handleDelete = useCallback(
     (id: string) => {
       commit(history.filter((item) => item.id !== id));
-      setSelected((current) => (current?.id === id ? null : current));
+      setSelectedId((current) => (current === id ? null : current));
     },
     [commit, history]
   );
@@ -51,9 +74,13 @@ function App() {
       <HistoryView
         history={history}
         onDelete={handleDelete}
-        onSelect={setSelected}
+        onSelect={setSelectedId}
       />
-      <Detail record={selected} onClose={() => setSelected(null)} />
+      <Detail
+        record={selected}
+        onUpdateMemo={handleUpdateMemo}
+        onClose={() => setSelectedId(null)}
+      />
     </div>
   );
 }
