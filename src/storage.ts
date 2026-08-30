@@ -21,7 +21,7 @@ export function normalize(value: unknown): RamenRecord[] | null {
   const records: RamenRecord[] = [];
   for (const item of value) {
     if (typeof item !== "object" || item === null) return null;
-    const { id, shop, date, rating } = item as Record<string, unknown>;
+    const { id, shop, date, rating, memo } = item as Record<string, unknown>;
 
     if (typeof shop !== "string" || typeof date !== "string") return null;
 
@@ -29,12 +29,16 @@ export function normalize(value: unknown): RamenRecord[] | null {
     const parsedRating = typeof rating === "number" ? rating : Number(rating);
     if (!Number.isFinite(parsedRating)) return null;
 
-    records.push({
+    const record: RamenRecord = {
       id: typeof id === "string" && id !== "" ? id : newId(),
       shop,
       date,
       rating: parsedRating,
-    });
+    };
+    // memo は後から足した項目なので、持っていない記録がそのまま流れてくる
+    if (typeof memo === "string" && memo !== "") record.memo = memo;
+
+    records.push(record);
   }
   return records;
 }

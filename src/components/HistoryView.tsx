@@ -11,7 +11,7 @@ function HistoryView({
 }: {
   history: RamenRecord[];
   onDelete: (id: string) => void;
-  onSelect: (record: RamenRecord) => void;
+  onSelect: (id: string) => void;
 }) {
   // 新しい記録が上に来るように並べる（元の配列は壊さない）
   const sorted = useMemo(
@@ -36,7 +36,7 @@ function HistoryView({
           <button
             type="button"
             className="record"
-            onClick={() => onSelect(item)}
+            onClick={() => onSelect(item.id)}
           >
             <span className="record__shop">{item.shop}</span>
             <span className="record__date">{item.date}</span>

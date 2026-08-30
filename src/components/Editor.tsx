@@ -39,6 +39,7 @@ function Editor({
   const [shop, setShop] = useState("");
   const [date, setDate] = useState<Dayjs | null>(dayjs());
   const [rating, setRating] = useState<number | null>(2.5);
+  const [memo, setMemo] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleOpen = () => setOpen(true);
@@ -47,17 +48,22 @@ function Editor({
   // 保存処理
   const handleSave = () => {
     if (!shop.trim() || !date || rating === null) {
-      alert("すべての項目を入力してください");
+      alert("店名・日付・評価を入力してください");
       return;
     }
-    onAdd({
+    const record: Omit<RamenRecord, "id"> = {
       shop: shop.trim(),
       date: date.format("YYYY-MM-DD"),
       rating,
-    });
+    };
+    // 感想は任意。空なら項目ごと持たせない
+    if (memo.trim()) record.memo = memo.trim();
+
+    onAdd(record);
     setShop("");
     setDate(dayjs());
     setRating(2.5);
+    setMemo("");
     setOpen(false);
   };
 
@@ -208,7 +214,7 @@ function Editor({
               sx={{ width: "100%" }}
             />
           </LocalizationProvider>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <span style={{ color: "#0093d1", fontWeight: "bold" }}>評価</span>
             <Rating
               name="rating"
@@ -217,6 +223,17 @@ function Editor({
               onChange={(_, newValue) => setRating(newValue)}
             />
           </Box>
+          <TextField
+            id="add_memo"
+            label="感想（任意）"
+            variant="outlined"
+            fullWidth
+            multiline
+            minRows={2}
+            maxRows={6}
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+          />
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center", pb: 2, gap: 2 }}>
           <Button
